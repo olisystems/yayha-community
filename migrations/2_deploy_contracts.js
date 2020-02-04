@@ -1,6 +1,7 @@
-const SampleContract = artifacts.require("SampleContract");
+
+const DoseCommunity = artifacts.require("DoseCommunity");
 
 module.exports = function (deployer) {
 
-    deployer.deploy(SampleContract);
+    deployer.deploy(DoseCommunity);
 };
