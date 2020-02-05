@@ -30,21 +30,21 @@ contract DoseCommunity {
     }
 
     /// register customer
-    function registerCustomer(address _address, string calldata _name)
-    external
-    requireNotRegistered(_address)
+    function registerCustomer(string calldata _name)
+        external
+        requireNotRegistered(msg.sender)
     {
         // create new customer from customer struct
         Customer memory newCustomer = Customer(_name, "not set", true);
-        customers[_address] = newCustomer;
-        emit NewCustomer(_address, _name);
+        customers[msg.sender] = newCustomer;
+        emit NewCustomer(msg.sender, _name);
     }
 
     /// get customer details
     function getCustomer(address _address)
-    public
-    view
-    returns (string memory, string memory, bool)
+        public
+        view
+        returns (string memory, string memory, bool)
     {
         string memory name = customers[_address].name;
         string memory tariff = customers[_address].tariff;
@@ -53,19 +53,19 @@ contract DoseCommunity {
     }
 
     /// set tariff
-    function setTariff(address _address, string calldata _tariff)
-    external
-    requireIsRegistered(_address)
+    function setTariff(string calldata _tariff)
+        external
+        requireIsRegistered(msg.sender)
     {
-        customers[_address].tariff = _tariff;
+        customers[msg.sender].tariff = _tariff;
     }
 
     /// send market energy values
-    function sendMarketEnergy(address _address, uint256 _energy)
-    external
-    requireIsRegistered(_address)
+    function sendMarketEnergy(uint256 _energy)
+        external
+        requireIsRegistered(msg.sender)
     {
-        emit MarketEnergy(_address, _energy);
+        emit MarketEnergy(msg.sender, _energy);
     }
 
     /// utility functions
