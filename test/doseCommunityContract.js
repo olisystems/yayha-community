@@ -6,7 +6,7 @@ const DoseCommunity = artifacts.require('DoseCommunity')
 contract('DoseCommunity', function (accounts) {
 
     let metamaskAccount = accounts[0]
-    let customer = '0xdB1C5945E7C5696501Fa15108a169dD8082e8F3d'
+    let customer = '0x4b3bF5DF0fbF3d1848550E77536dC3f414002aAd'
 
     let doseCommunity;
     before('setup contract', async () => {
@@ -16,7 +16,7 @@ contract('DoseCommunity', function (accounts) {
     // test for registerCustomer function
     it("can register customer", async () => {
         // set data value
-        const result = await doseCommunity.registerCustomer(customer, 'Customer 1', { from: customer });
+        const result = await doseCommunity.registerCustomer('Customer 1', { from: customer });
 
         // listen for the event
         truffleAssert.eventEmitted(result, 'NewCustomer');
@@ -40,7 +40,7 @@ contract('DoseCommunity', function (accounts) {
 
         // initial tariff
         const initialTariff = await doseCommunity.getCustomer(customer, { from: customer });
-        await doseCommunity.setTariff(customer, 'Weekly', { from: customer })
+        await doseCommunity.setTariff('Weekly', { from: customer })
         const updatedTariff = await doseCommunity.getCustomer(customer, { from: customer });
 
         assert.equal(initialTariff[1], 'not set', 'failed to get the initial tariff value');
@@ -49,7 +49,7 @@ contract('DoseCommunity', function (accounts) {
 
     // test for send market energy
     it('can send market energy', async () => {
-        const result = await doseCommunity.sendMarketEnergy(customer, 450, { from: customer });
+        const result = await doseCommunity.sendMarketEnergy(450, { from: customer });
 
         // listen for the event
         truffleAssert.eventEmitted(result, 'MarketEnergy', (event) => {
