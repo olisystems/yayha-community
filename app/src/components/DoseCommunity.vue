@@ -6,7 +6,6 @@
       <div class="admin">
         <div class="section register">
           <form @submit.prevent="registerConsumer">
-            <input v-model="newAddress" placeholder="customer ETH address" required />
             <input v-model="name" placeholder="customer name" required />
             <button type="submit">Register Consumer</button>
           </form>
@@ -14,15 +13,19 @@
 
         <div class="section tariff">
           <form @submit.prevent="setTariff">
-            <input v-model="tariffAddress" placeholder="customer ETH address" required />
-            <input v-model="tariff" placeholder="tariff details" required />
+            <select v-model="tariff" required>
+              <option disabled value>Please select one</option>
+              <option>Share</option>
+              <option>Classic</option>
+              <option>Exchange</option>
+            </select>
+            <!-- <input v-model="tariff" placeholder="tariff details" required /> -->
             <button type="submit">Set Tariff</button>
           </form>
         </div>
 
         <div class="section energy">
           <form @submit.prevent="sendEnergy">
-            <input v-model="energyAddress" placeholder="customer ETH address" required />
             <input type="number" v-model="energy" placeholder="market energy" required />
             <button type="submit">Send Energy</button>
           </form>
@@ -77,9 +80,6 @@ export default {
     return {
       account: "",
       contract: "",
-      newAddress: "",
-      tariffAddress: "",
-      energyAddress: "",
       name: "",
       tariff: "",
       energy: "",
@@ -101,16 +101,15 @@ export default {
     },
     registerConsumer() {
       this.contract.methods
-        .registerCustomer(this.newAddress, this.name)
+        .registerCustomer(this.name)
         .send({ from: this.account, gasPrice: "1" });
 
-      this.ethAddress = "";
       this.name = "";
     },
     watchRegistration() {
       this.contract.events
         .NewCustomer({
-          fromBlock: 3968667
+          fromBlock: 4168667
         })
         .on("data", event => {
           let obj = {};
@@ -141,26 +140,31 @@ export default {
     },
     setTariff() {
       this.contract.methods
-        .setTariff(this.tariffAddress, this.tariff)
+        .setTariff(this.tariff)
         .send({ from: this.account, gasPrice: "1" });
 
-      this.tariffAddress = "";
       this.tariff = "";
     },
     sendEnergy() {
-      this.contract.methods
-        .sendMarketEnergy(this.energyAddress, this.energy)
-        .send({ from: this.account, gasPrice: "1" });
+      const today = new Date();
+      const min = today.getMinutes();
+      if (min == 0 || min == 15 || min == 30 || min == 45) {
+        this.contract.methods
+          .sendMarketEnergy(this.energy)
+          .send({ from: this.account, gasPrice: "1" });
 
-      this.energyAddress = "";
-      this.energy = "";
+        this.energy = "";
+      } else {
+        alert("This is not quarter hour time!");
+        this.energy = "";
+      }
     },
 
     watchEnergy() {
       this.energyValues = [];
       this.contract.events
         .MarketEnergy({
-          fromBlock: 3968667
+          fromBlock: 4168667
         })
         .on("data", event => {
           let obj = {};
@@ -199,7 +203,10 @@ export default {
   border: 1px rgb(218, 215, 215) solid;
 }
 
-input {
+input,
+select {
+  outline: none;
+  background-color: white;
   margin: 0.5rem;
   padding: 0.5rem;
   border: rgb(207, 202, 202) solid 0.1px;
