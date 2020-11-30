@@ -1,4 +1,4 @@
-# DOSE Community
+# YAHYA Community
 DOSE Community
 
 ## 1. Getting Started
